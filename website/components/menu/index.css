@@ -1,0 +1,30 @@
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+    background-color: #292b2c;
+    text-transform: uppercase;
+    color: #ddd;
+    box-shadow: 2px 2px 2px 2px #292b2c;
+}
+
+ul {
+    list-style: none;
+    display: flex;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: #ddd;
+}
+
+.lista-menu li {
+    padding: 5px 50px;
+    border-bottom: 2px solid #292b2c;
+}
+
+.lista-menu  li:hover {
+    border-bottom: 2px solid #ddd;
+}

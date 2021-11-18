@@ -1,0 +1,33 @@
+.cabecalho {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 10px 100px;
+}
+
+picture {
+    padding: 0 50px;
+}
+
+picture > img {
+    border-radius: 20px;
+    box-shadow: 1px 1px 1px 2px #292b2c;
+}
+
+.conteudo {
+    border: 5px solid #292b2c;
+    border-radius: 4px;
+    padding: 0 20px;
+}
+
+.lista-skil li{
+    padding: 0 20px;
+}
+
+.lista-skil img {
+    height:120px;
+    width:120px;
+    border-radius: 5px;
+}
