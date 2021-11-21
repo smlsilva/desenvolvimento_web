@@ -1,3 +1,8 @@
+:root {
+    --size-font: 30px;
+    --margin-size: 50px;
+}
+
 * {
     margin: 0;
     color: #ddd;
@@ -14,6 +19,11 @@ body {
     align-content: center;
 }
 
+.login {
+    padding: 10px 100px;
+    font-family: 'Courier New', Courier;
+}
+
 form, main {
     display: flex;
     justify-content: center;
@@ -22,41 +32,32 @@ form, main {
     flex-direction: column;
 }
 
-.login {
-    padding: 10px 100px;
-    border-bottom: 2px solid ;
-    font-family: 'Courier New', Courier;
-}
-
 form {
-    padding: 10px 20px;
+    padding: 10px;
     border-radius: 30px 0 30px 0;
     box-shadow: 2px 1px 2px 2px #000;
     background-color: #4b0080;
 }
 
-h1, .user, .pass {
-    font-size: 30px;
-    padding: 10px 0;
+h1 {
+    font-size: 50px;
+    padding: 0;
 }
 
 input {
-    padding: 15px 40px;
-    /*border-top: none;
-    border-left: none;
-    border-right: none ;
-    border-bottom: 1px solid;*/
-    border: 1px solid;
-    font-size: 15px;
+    padding: 5px ;
+    margin-top: 5px;
+    border: none;
+    border-bottom: 1px solid #bbb;
+    font-size: var(--size-font);
     background-color: transparent;
-    border-radius: 5px;
 }
 
 .check {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
-    padding: 30px 20px 0 20px;
+    padding: 10px 20px 0 20px;
+    font-size: var(--size-font);
 }
 
 .check > input {
@@ -69,7 +70,7 @@ button {
     margin-top: 20px;
     cursor: pointer;
     border-radius: 10px;
-    font-size: 30px;
+    font-size: var(--size-font);
     background: linear-gradient(to left, #4b0082, #803);
     color: #ddd;
 }
@@ -78,8 +79,13 @@ button:hover {
     background: linear-gradient(to right, #803, #803);
 }
 
-a{
-    text-decoration: none;
+.forget{
     font-size: 20px;
-    padding: 15px 0;
+    padding: 15px 0 1px 0;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+}
+
+.forget:hover {
+    border-bottom: 1px solid #ccc;
 }
