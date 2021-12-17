@@ -9,11 +9,14 @@ function getData() {
                     const values = Array.from(datasInObject.data)
 
                     let names = []
+                    let city  = []
+
                     values.forEach(e => {
                         names.push(e.name)
+                        city.push(e.city)
                     })
 
-                    show(names)
+                    show(names, city)
                 })
         })
     } catch (error) {
@@ -21,18 +24,21 @@ function getData() {
     }
 }
 
-function show(datas) {
+function show(...datas) {
 
-    let names = ''
-    let city  = ''
+    let component = ''
+    let city = ''
 
-    for (let data of datas) {
-
-        names += `<li>${data}</li>`
+    for (let name of datas[0]) {
+        for (let city of datas[1]){
+            city += city
+        }
+        component += `<li>${name}:${city}</li>`
     }
 
     const div = document.createElement('div')
-    div.innerHTML = names
+
+    div.innerHTML = component
     return document.body.appendChild(div)
 }
 
