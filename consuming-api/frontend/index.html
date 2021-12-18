@@ -11,32 +11,9 @@
     <main>
 
     </main>
+    <button class="produtos">produtos</button> |
+    <button class="categorias">categorias</button>
 </body>
-<script>
-    async function getContent() {
-        // Consumindo uma API do Back-end
-        try {
-            // const url = "http://localhost:4567/"
-            const response = await fetch("http://localhost:4567", {method: 'get'})
-            const data     = await response.json()
-            show(data)
-        } catch (err) {
-            console.log(err)
-        }
-    }
-    getContent()
-
-    function show(users){
-
-        let output = ''
-        
-        for(let user of users){
-            output = `<li>${user.name}</li>`
-        }
-
-        document.querySelector('main').innerHTML = output
-    }
-
-</script>
-
+<script src="./src/produtos.js"></script>
+<script src="./src/categorias.js"></script>
 </html>
