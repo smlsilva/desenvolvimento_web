@@ -12,8 +12,16 @@
 
     </main>
     <button class="produtos">produtos</button> |
+    <button class="limpar">limpar</button> |
     <button class="categorias">categorias</button>
 </body>
 <script src="./src/produtos.js"></script>
 <script src="./src/categorias.js"></script>
+<script>
+    document.querySelector('.limpar').addEventListener('click', e => {
+        e.preventDefault()
+
+        document.querySelector('main').innerHTML = ''
+    })
+</script>
 </html>

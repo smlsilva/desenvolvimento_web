@@ -1,5 +1,6 @@
-async function getContentProdutos() {
+async function getContent() {
     // Consumindo uma API do Back-end
+    
     try {
         // const url = "http://localhost:4567/"
         const response = fetch('http://localhost:3000/categorias', { method: 'GET' })
@@ -18,7 +19,6 @@ async function getContentProdutos() {
                     for (let i in Array.from(valores)) {
                         dados.id.push(valores[i].id)
                         dados.nome.push(valores[i].nome)
-                        //dados.descricao.push(valores[i].descricao)
                     }
 
                     console.log(dados)
@@ -49,5 +49,5 @@ const categorias = document.querySelector('.categorias')
 categorias.addEventListener('click', e => {
     e.preventDefault()
 
-    getContentProdutos()
+    getContent()
 })
