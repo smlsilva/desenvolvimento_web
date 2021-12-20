@@ -48,3 +48,19 @@ como o javascript, por exemplo, e executar no cliente.
 RESTful, é a aplicação dos padrões REST.
 
 # Boas práticas:
+
+- Utilizar verbos HTTP para nossas requisições
+- Utilzar plural ou singular na criação dos ENDPOINTs ? _Não importa!_ use um padrão
+- Não deixa barra no final do endpoint
+- Nunca deixe o cliente sem resposta
+
+### VERBOS HTTP
+
+GET: Receber os dados de um Resource
+POST: Enviar os dados ou informações para serem processados por um Resource
+PUT: Atualizar os dados de um Resource
+DELETE: Deletar um Resource
+
+### STATUS DA RESPOSTA
+
+- https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status
