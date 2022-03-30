@@ -1,7 +1,7 @@
 <?php
-include 'fileCreate.php';
-include 'conn.php';
-include 'config.php';
+include 'logs/fileCreate.php';
+include 'database/conn.php';
+include 'settings/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -33,6 +33,8 @@ include 'config.php';
         
         date_default_timezone_set('America/Sao_Paulo');
         $dateNow = date('d/m/Y H:i:s');
+        $dateNow2 = date('d_m_Y');
+        $ip = $_SERVER['REMOTE_ADDR'];
 
     try {
 
@@ -47,20 +49,14 @@ include 'config.php';
         $mail->Port       = 465;                                  //TCP port to connect to; use 587 if you have
 
     //Remetente e Destinatário 
-        $mail->setFrom('automatico@suportespi.com.br', 'Suporte SPI');          // Origem
+        $mail->setFrom('noreply@suportespi.com.br', 'Suporte SPI');          // Origem
         
     //Conteúdo
-        $date = [
-            'day' => date('d'),
-            'month' => date('m'),
-            'year' => date('Y'),
-        ];
-
         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients'; //somente texto
         //Enviar
         
         if(isset($_GET['name'])){
-            while($data = $consulta_supervisor_rede->fetch(PDO::FETCH_OBJ)){
+            while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
                 
                 echo $data->SUPERVISOR_DE_REDE . '</br>';
                 echo $data->EMAIL_SUPERVISOR_DE_REDE . '</br>';
@@ -71,27 +67,14 @@ include 'config.php';
                 $mail->addAddress($email, $nome);   //Destinatário
                 $mail->isHTML(true);                                  //Set email format to HTML
                 $mail->Subject = 'Resposta Automática';                 //Assunto
-                $mail->Body    = '
-                <html>
-                    <head>
-                        <title> Resposta Automática </title>
-                    </head>
-                    <body>
-                        <p>Olá! Solicitante, recebemos a solicitação de Acesso para o colaborador <strong>'.$nome.'</strong> dia '.date('d') .'/'. date('m').'/'.date('Y').', 
-                        status inicial é <strong> Solicitado</strong>.</p>
-                        <p>O prazo médio é de 7 a 15 dias e você será informado a cada etada do processo até sua conclusão .</p>
-        
-        
-                    </body>
-                </html>
-                
-                '; //html
-            registro($email, $nome, $dateNow);
-            $mail->send();
+                $mail->Body    = $body;
+            
+                $mail->send();
+                registro($email, $nome, $dateNow, $dateNow2, $ip);
         }
         }
 
-    /*while($data = $consulta_supervisor_area->fetch(PDO::FETCH_OBJ)){
+    /*while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
             
         echo $data->SUPERVISOR_DE_AREA . '</br>';
         echo $data->EMAIL_SUPERVISOR_DE_AREA . '</br>';
@@ -102,25 +85,11 @@ include 'config.php';
         $mail->addAddress($email, $nome);   //Destinatário
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = 'Resposta Automática';                 //Assunto
-        $mail->Body    = '
-        <html>
-            <head>
-                <title> Resposta Automática </title>
-            </head>
-            <body>
-                <p>Olá! Solicitante, recebemos a solicitação de Acesso para o colaborador <strong>'.$nome.'</strong> dia '.date('d') .'/'. date('m').'/'.date('Y').', 
-                status inicial é <strong> Solicitado</strong>.</p>
-                <p>O prazo médio é de 7 a 15 dias e você será informado a cada etada do processo até sua conclusão .</p>
-
-
-            </body>
-        </html>
-        
-        '; //html
+        $mail->Body    = $body; //html
     $mail->send();
     }*/
 
-    /*while($data = $consulta_coordenador->fetch(PDO::FETCH_OBJ)){
+    /*while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
             
         echo $data->COORDENADOR . '</br>';
         echo $data->EMAIL_COORDENADOR . '</br>';
@@ -131,25 +100,11 @@ include 'config.php';
         $mail->addAddress($email, $nome);   //Destinatário
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = 'Resposta Automática';                 //Assunto
-        $mail->Body    = '
-        <html>
-            <head>
-                <title> Resposta Automática </title>
-            </head>
-            <body>
-                <p>Olá! Solicitante, recebemos a solicitação de Acesso para o colaborador <strong>'.$nome.'</strong> dia '.date('d') .'/'. date('m').'/'.date('Y').', 
-                status inicial é <strong> Solicitado</strong>.</p>
-                <p>O prazo médio é de 7 a 15 dias e você será informado a cada etada do processo até sua conclusão .</p>
-
-
-            </body>
-        </html>
-        
-        '; //html
+        $mail->Body    = $body; //html
     $mail->send();
     }*/
 
-    /*while($data = $consulta_gerente->fetch(PDO::FETCH_OBJ)){
+    /*while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
             
         echo $data->GERENTE . '</br>';
         echo $data->EMAIL_GERENTE . '</br>';
@@ -160,21 +115,7 @@ include 'config.php';
         $mail->addAddress($email, $nome);   //Destinatário
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = 'Resposta Automática';                 //Assunto
-        $mail->Body    = '
-        <html>
-            <head>
-                <title> Resposta Automática </title>
-            </head>
-            <body>
-                <p>Olá! Solicitante, recebemos a solicitação de Acesso para o colaborador <strong>'.$nome.'</strong> dia '.date('d') .'/'. date('m').'/'.date('Y').', 
-                status inicial é <strong> Solicitado</strong>.</p>
-                <p>O prazo médio é de 7 a 15 dias e você será informado a cada etada do processo até sua conclusão .</p>
-
-
-            </body>
-        </html>
-        
-        '; //html
+        $mail->Body    =  $body; //html
     $mail->send();
     }*/
         //echo "<p style='color:#8fe28f;background: rgba(0, 0, 0, 0.5);text-align: center;font-size: 1rem;padding: 17px;font-weight: bold'>Mensagem enviada com sucesso!</p>";
