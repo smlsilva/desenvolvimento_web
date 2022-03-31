@@ -32,24 +32,26 @@ include 'settings/config.php';
         $mail = new PHPMailer(true);
         
         date_default_timezone_set('America/Sao_Paulo');
-        $dateNow = date('d/m/Y H:i:s');
-        $dateNow2 = date('d_m_Y');
+        $dateAndTime = date('d/m/Y H:i:s');
+        $dateToRename = date('d_m_y');
+        $dateNow = date('d/m/Y');
+        $timeNow = date('H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
 
     try {
 
         //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Exibe informações do processo de envio
         $mail->CharSet = 'UTF-8';
-        $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host       = 'mail.suportespi.com.br';       //Set the SMTP server to send through
-        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-        $mail->Username   = $username;    //SMTP username
+        $mail->isSMTP();                                        //Send using SMTP
+        $mail->Host       = 'mail.suportespi.com.br';           //Set the SMTP server to send through
+        $mail->SMTPAuth   = true;                               //Enable SMTP authentication
+        $mail->Username   = $username;                          //SMTP username
         $mail->Password   = $password;                          //SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
         $mail->Port       = 465;                                  //TCP port to connect to; use 587 if you have
 
     //Remetente e Destinatário 
-        $mail->setFrom('noreply@suportespi.com.br', 'Suporte SPI');          // Origem
+        $mail->setFrom($username, 'Suporte SPI');          // Origem
         
     //Conteúdo
         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients'; //somente texto
@@ -57,9 +59,6 @@ include 'settings/config.php';
         
         if(isset($_GET['name'])){
             while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
-                
-                echo $data->SUPERVISOR_DE_REDE . '</br>';
-                echo $data->EMAIL_SUPERVISOR_DE_REDE . '</br>';
                 
                 $email = $data->EMAIL_SUPERVISOR_DE_REDE;
                 $nome  = $data->SUPERVISOR_DE_REDE;
@@ -70,7 +69,7 @@ include 'settings/config.php';
                 $mail->Body    = $body;
             
                 $mail->send();
-                registro($email, $nome, $dateNow, $dateNow2, $ip);
+                registro($email, $nome, $dateAndTime, $dateToRename, $dateNow, $timeNow, $ip);
         }
         }
 
