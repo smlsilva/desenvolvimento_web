@@ -1,6 +1,7 @@
 <?php
 include 'logs/fileCreate.php';
 include 'database/conn.php';
+include 'database/update.php';
 include 'settings/config.php';
 ?>
 <!DOCTYPE html>
@@ -19,16 +20,12 @@ include 'settings/config.php';
 <body>
     <?php
     
-    // Importar classes PHPMailer para o namespace global
-    // Eles devem estar no topo do seu script, não dentro de uma função
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\SMTP;
     use PHPMailer\PHPMailer\Exception;
 
-    // Carrega o autoloader do Composer
     require './lib/vendor/autoload.php';
 
-    // Cria uma instância; passar `true` permite exceções
         $mail = new PHPMailer(true);
         
         date_default_timezone_set('America/Sao_Paulo');
@@ -57,74 +54,111 @@ include 'settings/config.php';
         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients'; //somente texto
         //Enviar
         
-        if(isset($_GET['name'])){
-            while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
+        $conn->query('UPDATE rit SET RESUMO = UPPER(RESUMO)');
+        $conn->query('UPDATE rit SET SITUACAO = UPPER(SITUACAO)');
+        $conn->query($updateReplace);
+
+        while($data = $enviarEmailRede->fetch(PDO::FETCH_OBJ)){
                 
                 $email = $data->EMAIL_SUPERVISOR_DE_REDE;
                 $nome  = $data->SUPERVISOR_DE_REDE;
-                
+                $cargo = 'SUPERVISOR_DE_REDE';
+
                 $mail->addAddress($email, $nome);   //Destinatário
                 $mail->isHTML(true);                                  //Set email format to HTML
                 $mail->Subject = 'Resposta Automática';                 //Assunto
                 $mail->Body    = $body;
-            
+        
                 $mail->send();
-                registro($email, $nome, $dateAndTime, $dateToRename, $dateNow, $timeNow, $ip);
+                registro($email, $nome, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
         }
+        
+        while($datas = $consulta_registros->fetch(PDO::FETCH_OBJ)) {
+            
+            $day_now = date('d');
+            $month_now = date('m');
+            $year_now = date('Y');
+
+            $day = $datas->DATA_ATUAL[0].''.$datas->DATA_ATUAL[1];
+            $month = $datas->DATA_ATUAL[3].''.$datas->DATA_ATUAL[4];
+            $year = $datas->DATA_ATUAL[6].''.$datas->DATA_ATUAL[7].''.$datas->DATA_ATUAL[8].''.$datas->DATA_ATUAL[9];
+
+            if(($day < $day_now) or ($month < $month_now) or ($year < $year_now)) {
+
+                if($day < $day_now) {
+
+                    if($day_now - $day == 1) {
+                        
+                        while($consulta_area = $enviarEmailArea->fetch(PDO::FETCH_OBJ)) {
+                            $nome_area = $consulta_area->SUPERVISOR_DE_AREA;
+                            $email_area = $consulta_area->EMAIL_SUPERVISOR_DE_AREA;
+                            $cargo = 'SUPERVISOR_DE_AREA';
+    
+                            $mail->addAddress($email_area, $nome_area);   //Destinatário
+                            $mail->isHTML(true);                                  //Set email format to HTML
+                            $mail->Subject = 'Resposta Automática';                 //Assunto
+                            $mail->Body    = $body;
+            
+                            registro($email_area, $nome_area, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
+                            $mail->send();
+                        }
+    
+                   } else if(($day_now - $day >= 2) and ($day_now - $day <= 20)) {
+                    
+                        while($consulta_coordenador = $enviarEmailCoordenador->fetch(PDO::FETCH_OBJ)) {
+                            $nome_coordenador = $consulta_coordenador->COORDENADOR;
+                            $email_coordenador = $consulta_coordenador->EMAIL_COORDENADOR;
+                            $cargo = 'COORDENADOR';
+    
+                            $mail->addAddress($email_coordenador, $nome_coordenador);   //Destinatário
+                            $mail->isHTML(true);                                  //Set email format to HTML
+                            $mail->Subject = 'Resposta Automática';                 //Assunto
+                            $mail->Body    = $body;
+                            
+                            registro($email_coordenador, $nome_coordenador, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
+                            $mail->send();
+                        }
+    
+                   } else if (($day_now - $day > 20) and ($day_now <= 30)) {
+                    
+                        while($consulta_gerente = $enviarEmailGerente->fetch(PDO::FETCH_OBJ)) {
+                            $nome_gerente = $consulta_gerente->GERENTE;
+                            $email_gerente = $consulta_gerente->EMAIL_GERENTE;
+                            $cargo = 'GERENTE';
+    
+                            $mail->addAddress($email_gerente, $nome_gerente);   //Destinatário  
+                            $mail->isHTML(true);                                  //Set email format to HTML
+                            $mail->Subject = 'Resposta Automática';                 //Assunto
+                            $mail->Body    = $body;
+            
+                            registro($email_gerente, $nome_gerente, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
+                            $mail->send();
+                        }    
+                   }
+                }
+
+            } else {
+                echo 'Sem registro';
+            }
         }
 
-    /*while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
-            
-        echo $data->SUPERVISOR_DE_AREA . '</br>';
-        echo $data->EMAIL_SUPERVISOR_DE_AREA . '</br>';
-        
-        $email = $data->EMAIL_SUPERVISOR_DE_AREA;
-        $nome  = $data->SUPERVISOR_DE_AREA;
-        
-        $mail->addAddress($email, $nome);   //Destinatário
+        $mail->addAddress('gustavo.balmeida@telefonica.com', 'Gustavo Almeida');
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = 'Resposta Automática';                 //Assunto
-        $mail->Body    = $body; //html
-    $mail->send();
-    }*/
-
-    /*while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
-            
-        echo $data->COORDENADOR . '</br>';
-        echo $data->EMAIL_COORDENADOR . '</br>';
+        $mail->Body    = $body;
         
-        $email = $data->EMAIL_COORDENADOR;
-        $nome  = $data->COORDENADOR;
-        
-        $mail->addAddress($email, $nome);   //Destinatário
+        $mail->addAddress('lima.eduardo@telefonica.com', 'Eduardo de Lima');
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = 'Resposta Automática';                 //Assunto
-        $mail->Body    = $body; //html
-    $mail->send();
-    }*/
-
-    /*while($data = $consulta_email_teste->fetch(PDO::FETCH_OBJ)){
-            
-        echo $data->GERENTE . '</br>';
-        echo $data->EMAIL_GERENTE . '</br>';
+        $mail->Body    = $body;
         
-        $email = $data->EMAIL_GERENTE;
-        $nome  = $data->GERENTE;
+        //registro($email, $nome, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
+        $mail->send();
         
-        $mail->addAddress($email, $nome);   //Destinatário
-        $mail->isHTML(true);                                  //Set email format to HTML
-        $mail->Subject = 'Resposta Automática';                 //Assunto
-        $mail->Body    =  $body; //html
-    $mail->send();
-    }*/
-        //echo "<p style='color:#8fe28f;background: rgba(0, 0, 0, 0.5);text-align: center;font-size: 1rem;padding: 17px;font-weight: bold'>Mensagem enviada com sucesso!</p>";
         } catch (Exception $e) {
         echo "<p style='color:#e27777;background: rgba(0, 0, 0, 0.5);text-align: center;font-size: 1rem;padding: 17px;font-weight: bold'>Falha no envio da mensagem: Mailer Error: {$mail->ErrorInfo}</p>";
         }
     // Configurações do servidor
     ?>
-    
-    <a href='index.php?name=true'>Execute PHP Function</a>
-
 </body>
 </html>
