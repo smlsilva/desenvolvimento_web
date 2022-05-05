@@ -11,11 +11,6 @@ include 'settings/config.php';
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enviar email</title>
-    <style>
-        html {
-            font-family: sans-serif
-        }
-    </style>
 </head>
 <body>
     <?php
@@ -58,7 +53,7 @@ include 'settings/config.php';
         $conn->query('UPDATE rit SET SITUACAO = UPPER(SITUACAO)');
         $conn->query($updateReplace);
 
-        while($data = $enviarEmailRede->fetch(PDO::FETCH_OBJ)){
+        while($data = $consulta_email_rede->fetch(PDO::FETCH_OBJ)){
                 
                 $email = $data->EMAIL_SUPERVISOR_DE_REDE;
                 $nome  = $data->SUPERVISOR_DE_REDE;
@@ -68,79 +63,93 @@ include 'settings/config.php';
                 $mail->isHTML(true);                                  //Set email format to HTML
                 $mail->Subject = 'Resposta Automática';                 //Assunto
                 $mail->Body    = $body;
-        
-                $mail->send();
-                registro($email, $nome, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
+
+                //$mail->send();
+                //registro($email, $nome, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
         }
-        
-        while($datas = $consulta_registros->fetch(PDO::FETCH_OBJ)) {
+
+        while($geral = $consulta_geral->fetch(PDO::FETCH_OBJ)){
             
-            $day_now = date('d');
+            $day_now   = date('d');
             $month_now = date('m');
-            $year_now = date('Y');
-
-            $day = $datas->DATA_ATUAL[0].''.$datas->DATA_ATUAL[1];
-            $month = $datas->DATA_ATUAL[3].''.$datas->DATA_ATUAL[4];
-            $year = $datas->DATA_ATUAL[6].''.$datas->DATA_ATUAL[7].''.$datas->DATA_ATUAL[8].''.$datas->DATA_ATUAL[9];
-
-            if(($day < $day_now) or ($month < $month_now) or ($year < $year_now)) {
-
-                if($day < $day_now) {
-
-                    if($day_now - $day == 1) {
-                        
-                        while($consulta_area = $enviarEmailArea->fetch(PDO::FETCH_OBJ)) {
-                            $nome_area = $consulta_area->SUPERVISOR_DE_AREA;
-                            $email_area = $consulta_area->EMAIL_SUPERVISOR_DE_AREA;
-                            $cargo = 'SUPERVISOR_DE_AREA';
-    
-                            $mail->addAddress($email_area, $nome_area);   //Destinatário
-                            $mail->isHTML(true);                                  //Set email format to HTML
-                            $mail->Subject = 'Resposta Automática';                 //Assunto
-                            $mail->Body    = $body;
+            $year_now  = date('Y');
             
-                            registro($email_area, $nome_area, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
-                            $mail->send();
-                        }
-    
-                   } else if(($day_now - $day >= 2) and ($day_now - $day <= 20)) {
-                    
-                        while($consulta_coordenador = $enviarEmailCoordenador->fetch(PDO::FETCH_OBJ)) {
-                            $nome_coordenador = $consulta_coordenador->COORDENADOR;
-                            $email_coordenador = $consulta_coordenador->EMAIL_COORDENADOR;
-                            $cargo = 'COORDENADOR';
-    
-                            $mail->addAddress($email_coordenador, $nome_coordenador);   //Destinatário
-                            $mail->isHTML(true);                                  //Set email format to HTML
-                            $mail->Subject = 'Resposta Automática';                 //Assunto
-                            $mail->Body    = $body;
-                            
-                            registro($email_coordenador, $nome_coordenador, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
-                            $mail->send();
-                        }
-    
-                   } else if (($day_now - $day > 20) and ($day_now <= 30)) {
-                    
-                        while($consulta_gerente = $enviarEmailGerente->fetch(PDO::FETCH_OBJ)) {
-                            $nome_gerente = $consulta_gerente->GERENTE;
-                            $email_gerente = $consulta_gerente->EMAIL_GERENTE;
-                            $cargo = 'GERENTE';
-    
-                            $mail->addAddress($email_gerente, $nome_gerente);   //Destinatário  
-                            $mail->isHTML(true);                                  //Set email format to HTML
-                            $mail->Subject = 'Resposta Automática';                 //Assunto
-                            $mail->Body    = $body;
-            
-                            registro($email_gerente, $nome_gerente, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
-                            $mail->send();
-                        }    
-                   }
-                }
+            $day   = $geral->DATA_RIT[8].''.$geral->DATA_RIT[9];
+            $month = $geral->DATA_RIT[5].''.$geral->DATA_RIT[6];
+            $year  = $geral->DATA_RIT[0].''.$geral->DATA_RIT[1].''.$geral->DATA_RIT[2].''.$geral->DATA_RIT[3];
 
-            } else {
-                echo 'Sem registro';
-            }
-        }
+            $firstDate = $year.'-'.$month.'-'.$day;
+            $secondDate = $year_now.'-'.$month_now.'-'.$day_now;
+            
+            $dateDifference = abs(strtotime($secondDate) - strtotime($firstDate));
+
+            $years  = floor($dateDifference / (365 * 60 * 60 * 24));
+            $months = floor(($dateDifference - $years * 365 * 60 * 60 * 24) / (30 * 60 * 60 * 24));
+            $days   = floor(($dateDifference - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 *24) / (60 * 60 * 24));
+
+            if($days == 1) {
+                
+                while($ritPendente = $consulta_email_area->fetch(PDO::FETCH_OBJ)) {
+            
+                    if($ritPendente->DATA_RIT == $geral->DATA_RIT) {
+
+                        $nome_area = $ritPendente->SUPERVISOR_DE_AREA;
+                        $email_area = $ritPendente->EMAIL_SUPERVISOR_DE_AREA;
+                        $cargo = 'SUPERVISOR_DE_AREA';
+
+                        $mail->addAddress($email_area, $nome_area);   //Destinatário
+                        $mail->isHTML(true);                                  //Set email format to HTML
+                        $mail->Subject = 'Resposta Automática';                 //Assunto
+                        $mail->Body    = $body;
+            
+                        //registro($email_area, $nome_area, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
+                        //$mail->send();
+                        }
+                       }
+                    }
+                    else if($days == 2) {
+
+                        while($ritPendente = $consulta_email_coodenador->fetch(PDO::FETCH_OBJ)) {
+                
+                            if($ritPendente->DATA_RIT == $geral->DATA_RIT){
+                                
+                                $nome_coordenador = $ritPendente->COORDENADOR;
+                                $email_coordenador = $ritPendente->EMAIL_COORDENADOR;
+                                $cargo = 'COORDENADOR';
+                                
+                                $mail->addAddress($email_coordenador, $nome_coordenador);   //Destinatário
+                                $mail->isHTML(true);                                  //Set email format to HTML
+                                $mail->Subject = 'Resposta Automática';                 //Assunto
+                                $mail->Body    = $body;
+                                        
+                                //registro($email_coordenador, $nome_coordenador, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
+                                //$mail->send();
+                            }
+                            }
+                        }
+                        else if($days >= 3) {
+
+                            while($ritPendente = $consulta_email_gerente->fetch(PDO::FETCH_OBJ)) {
+                                    
+                                if($ritPendente->DATA_RIT == $geral->DATA_RIT){
+                                    
+                                    $nome_gerente = $ritPendente->GERENTE;
+                                    $email_gerente = $ritPendente->EMAIL_GERENTE;
+                                    $cargo = 'GERENTE';
+                
+                                    $mail->addAddress($email_gerente, $nome_gerente);   //Destinatário  
+                                    $mail->isHTML(true);                                  //Set email format to HTML
+                                    $mail->Subject = 'Resposta Automática';                 //Assunto
+                                    $mail->Body    = $body;
+                    
+                                    //registro($email_gerente, $nome_gerente, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
+                                    //$mail->send();
+
+                                }
+                            }
+                        }
+                    } 
+
 
         $mail->addAddress('gustavo.balmeida@telefonica.com', 'Gustavo Almeida');
         $mail->isHTML(true);                                  //Set email format to HTML
@@ -153,10 +162,10 @@ include 'settings/config.php';
         $mail->Body    = $body;
         
         //registro($email, $nome, $dateAndTime, $dateToRename, $dateNow, $timeNow, $cargo);
-        $mail->send();
+        //$mail->send();
         
         } catch (Exception $e) {
-        echo "<p style='color:#e27777;background: rgba(0, 0, 0, 0.5);text-align: center;font-size: 1rem;padding: 17px;font-weight: bold'>Falha no envio da mensagem: Mailer Error: {$mail->ErrorInfo}</p>";
+            echo "<p style='color:#e27777;background: rgba(0, 0, 0, 0.5);text-align: center;font-size: 1rem;padding: 17px;font-weight: bold'>Falha no envio da mensagem: Mailer Error: {$mail->ErrorInfo}</p>";
         }
     // Configurações do servidor
     ?>
